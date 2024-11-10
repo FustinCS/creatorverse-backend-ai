@@ -8,14 +8,14 @@ def load_image_from_url(url):
     response = requests.get(url)
     return Image.open(BytesIO(response.content))
 
-def calculate_similarity_scores(
+def calculate_similarity_score(
         given_url: str, 
         community_urls: list[str],
         model,
         processor,
         cos,
         device
-) -> list[float]:
+) -> float:
     """Calculate similarity scores between given image and each of a community's images"""
     similarity_scores = []
     
@@ -32,5 +32,10 @@ def calculate_similarity_scores(
             similarity = cos(given_image_features[0], image_features[0]).item()
             similarity = (similarity + 1) / 2
             similarity_scores.append(similarity)
+    
+    # get average of all scores
+    avg_similarity = 0
+    if len(similarity_scores) > 0:
+        avg_similarity = sum(similarity_scores) / len(similarity_scores)
   
-    return similarity_scores
+    return avg_similarity

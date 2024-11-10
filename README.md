@@ -1,0 +1,1 @@
+# install venv using "python -m venv .venv" and "source .venv/bin/activate"

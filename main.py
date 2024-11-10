@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from transformers import CLIPProcessor, CLIPModel
 import torch
 from utils.similarity_scores import calculate_similarity_score
@@ -12,6 +13,7 @@ url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
+
 model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model = model.to(device)
@@ -19,6 +21,14 @@ processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 cos = torch.nn.CosineSimilarity(dim=0)
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/compare")
 async def compareImages(request: Request):
